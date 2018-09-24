@@ -6,27 +6,38 @@ CHECK_INTERVAL="${CHECK_INTERVAL:-60}"
 DEFAULT_POLICY_COMMENT="${DEFAULT_POLICY_COMMENT:-k8s-iptables-default-policy}"
 MAX_TRIES="${MAX_TRIES:-15}"
 
-defaultPolicyApplied=0
+failedAttempts=0
 
 applyDefaultPolicy () {
 
+    policyComment="${DEFAULT_POLICY_COMMENT}"
+    if [[ ! -f "${POLICY_FILE}" ]]; then
+        policyComment="${POLICY_REVISION}"
+    fi
     cat <<EOF | iptables-restore -T raw
 *raw
 :PREROUTING ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
--A PREROUTING -m comment --comment "${DEFAULT_POLICY_COMMENT}"
+-A PREROUTING -m comment --comment "${policyComment}"
 COMMIT
 EOF
-    ((defaultPolicyApplied++))
-    echo "applied default policy: ${defaultPolicyApplied}"
+
+    echo "$(date +%s): applied default policy"
 }
 
 applyPolicy () {
 
     if [[ -f "${POLICY_FILE}" ]]; then 
-            echo "applying provided policy"
-            iptables-restore -T raw < ${POLICY_FILE} || applyDefaultPolicy
+
+            if ! (iptables-restore -T raw < ${POLICY_FILE}); then
+                ((failedAttempts++))
+                echo "$(date +%s): failed to apply provided policy for the ${failedAttempts} times"
+                applyDefaultPolicy
+            else
+                echo "$(date +%s): applied provided policy"
+            fi
             return
+
     fi
     applyDefaultPolicy
 
@@ -48,7 +59,7 @@ while :; do
     
     sleep ${CHECK_INTERVAL}
     if ! policyExists; then 
-        if [[ ${defaultPolicyApplied} < ${MAX_TRIES} ]]; then
+        if [[ ${failedAttempts} < ${MAX_TRIES} ]]; then
             applyPolicy
         fi
     fi
