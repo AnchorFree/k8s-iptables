@@ -9,7 +9,7 @@ The idea is to apply your iptables restrictionis before docker/k8s/weave rules.
 `k8s-iptables` bash script is pretty simple:
 
 1. On the startup it applies the policy
-2. Sleeps for the **CHECK_INTERVAL*** seconds
+2. Sleeps for the **CHECK_INTERVAL** seconds
 3. Checks if the policy still exists
 4. Reapplies it, if it does not
 5. Go to 2.
@@ -35,7 +35,7 @@ Don't forget to put the same keyword (for example, as a first comment only rule 
 * **DEFAULT_POLICY_COMMENT**  
 When applying default policy, `k8s-iptables` creates an allow-all policy, with a single comment only
 rule. If **POLICY_FILE** is not provided, then **POLICY_REVISION** value will be used as the contents of the comment.
-Otherwise, **DEFAULT_POLICY_COMMENT** defines the value of this comment. Default is **k8s-iptables-default-policy**.
+Otherwise, **DEFAULT_POLICY_COMMENT** value defines the contents of this comment. Default is **k8s-iptables-default-policy**.
 
 * **CHECK_INTERVAL**  
 Time in seconds between checks if the policy exists.
