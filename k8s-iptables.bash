@@ -16,7 +16,7 @@ applyDefaultPolicy () {
         policyComment="${POLICY_REVISION}"
    fi
 
-    if [[ "${DEFAULT_POLICY_MODE}" == "DROP" ]]; then
+    if [[ "${DEFAULT_POLICY_MODE}" != "DROP" ]]; then
 
     cat <<EOF | iptables-restore -T raw
 *raw
