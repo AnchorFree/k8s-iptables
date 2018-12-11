@@ -42,6 +42,7 @@ EOF
 -A PREROUTING -p tcp -s 192.168.0.0/16 -j ACCEPT
 -A PREROUTING -p tcp -d 192.168.0.0/16 -j ACCEPT
 -A PREROUTING -p tcp --dport 22 -j ACCEPT
+COMMIT
 EOF
 
     fi
