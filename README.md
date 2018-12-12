@@ -32,6 +32,11 @@ by **POLICY_REVISION** variable, in `iptables-save -t raw` output.
 If the keyword is found, `k8s-iptables` assumes that the policy exists.
 Don't forget to put the same keyword (for example, as a first comment only rule in the policy) in your policy definition, i.e. in your **POLICY_FILE***.
 
+* **DEFAULT_POLICY_MODE**  
+There are two builtin policies, ACCEPT all and DROP all but ssh connects. When applying
+default policy, `k8s-iptables` checks this variable. If it's set to "DROP" then the DROP
+policy will be applied. All other values will result in ACCEPT policy. Default is **DROP**.
+
 * **DEFAULT_POLICY_COMMENT**  
 When applying default policy, `k8s-iptables` creates an allow-all policy, with a single comment only
 rule. If **POLICY_FILE** is not provided, then **POLICY_REVISION** value will be used as the contents of the comment.
@@ -46,5 +51,7 @@ reapplies it if it is not. Default is **60**.
 * **MAX_TRIES**  
 Each time when `k8s-iptables` tries to apply the provided policy and fails, it increases an internal counter `failedAttempts`.
 When `k8s-iptables`, on a new loop iteration, sees that the policy does not exist, it will try to reapply it 
-only if `failedAttempts < MAX_TRIES`. 
+only if `failedAttempts < MAX_TRIES`. When MAX_TRIES == 0 `k8s-iptables` will try to apply the policy in an infinite loop. 
+Default is **0**.
+
 
